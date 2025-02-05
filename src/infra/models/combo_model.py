@@ -1,6 +1,9 @@
-from sqlalchemy import Column, Integer, Float, ForeignKey, Table
-from sqlalchemy.orm import relationship
+from __future__ import annotations
+
 from src.infra.db.base import Base
+
+from sqlalchemy import Column, Integer, ForeignKey, Table
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 combo_addon_association = Table(
     "combo_addon",
@@ -9,15 +12,14 @@ combo_addon_association = Table(
     Column("addon_id", Integer, ForeignKey("addons.id"), primary_key=True),
 )
 
+
 class ComboModel(Base):
     __tablename__ = "combos"
 
-    id = Column(Integer, primary_key=True, index=True)
-    id_product = Column(Integer, ForeignKey("products.id"), nullable=False)
-    price = Column(Float, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id_product: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False)
+    price: Mapped[float] = mapped_column(nullable=False)
 
-    # Relacionamentos
-    product = relationship("ProductModel", back_populates="combos")
-    addons = relationship("AddonModel", secondary=combo_addon_association, back_populates="combos")
-
-    order = relationship("OrderModel", back_populates="combos")
+    product: Mapped["ProductModel"] = relationship("ProductModel", back_populates="combos")
+    addons: Mapped[list["AddonModel"]] = relationship(secondary=combo_addon_association, back_populates="combos")
+    order: Mapped["OrderModel"] = relationship("OrderModel", back_populates="combos")
