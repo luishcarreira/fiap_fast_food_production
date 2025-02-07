@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.entities.product_entity import ProductEntity
-from src.domain.interfaces.i_product_repository import IProductRepository
+from src.domain.interfaces.repositories.i_product_repository import IProductRepository
 
 from src.infra.models.product_model import ProductModel
 from src.infra.utils.generic_mapper import GenericMapper

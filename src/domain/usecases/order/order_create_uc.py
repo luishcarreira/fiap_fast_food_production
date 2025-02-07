@@ -4,7 +4,7 @@ import inject
 
 from src.domain.entities.order_entity import OrderEntity
 from src.domain.entities.product_entity import ProductEntity
-from src.domain.interfaces.i_order_repository import IOrderRepository
+from src.domain.interfaces.repositories.i_order_repository import IOrderRepository
 from src.domain.usecases.order.dtos.create_order_dto import CreteOrderDto
 
 

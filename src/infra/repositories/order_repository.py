@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from src.domain.entities.order_entity import OrderEntity
-from src.domain.interfaces.i_order_repository import IOrderRepository
+from src.domain.interfaces.repositories.i_order_repository import IOrderRepository
 from src.infra.models.order_model import OrderModel
 from src.infra.utils.generic_mapper import GenericMapper
 

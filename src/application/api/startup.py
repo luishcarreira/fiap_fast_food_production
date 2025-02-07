@@ -1,15 +1,25 @@
+from src.application.api.ioc.ioc import Ioc as IocApi
 
-from src.infra.ioc.ioc import Ioc
 
-
-class StartupApi:
+class Startup:
 
     @staticmethod
     def initialize():
-        Ioc.initialize()
+        IocApi.initialize()
 
         from fastapi import FastAPI
         app = FastAPI()
+
+        # app.add_middleware(
+        #     CORSMiddleware,
+        #     allow_origins=[
+        #         "http://localhost",
+        #         "http://localhost:3000",
+        #     ],
+        #     allow_credentials=True,
+        #     allow_methods=["*"],
+        #     allow_headers=["*"],
+        # )
 
         from src.application.api.controllers import production_controller, health_check_controller
 
