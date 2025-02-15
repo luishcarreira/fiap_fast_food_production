@@ -1,4 +1,4 @@
-from typing import Callable, AsyncGenerator
+from typing import Callable, AsyncGenerator, Optional
 
 import inject
 from sqlalchemy import select
@@ -27,3 +27,12 @@ class ProductRepository(IProductRepository):
             return GenericMapper.to_entity(product_model, ProductEntity) if product_model else None
 
         return None
+
+    async def create(self, product_entity: ProductEntity) -> Optional[ProductEntity]:
+        async for session in self._session_factory():
+            product_model = GenericMapper.to_model(product_entity, ProductModel)
+
+            session.add(product_model)
+            await session.commit()
+
+            return GenericMapper.to_entity(product_model, ProductEntity)

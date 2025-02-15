@@ -5,5 +5,6 @@ from src.domain.usecases.product.dtos.create_product_dto import CreateProductDto
 
 
 class CreateComboDto(BaseModel):
+    id: int
     product: CreateProductDto
     addons: list[CreateAddonDto]

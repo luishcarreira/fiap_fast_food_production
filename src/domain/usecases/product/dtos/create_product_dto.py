@@ -4,6 +4,7 @@ from src.domain.enums.product_category_enum import ProductCategoryEnum
 
 
 class CreateProductDto(BaseModel):
+    id: int
     name: str
     description: str
     price: float

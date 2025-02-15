@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: production-consumer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: production-consumer
+  template:
+    metadata:
+      labels:
+        app: production-consumer
+    spec:
+      containers:
+        - name: production-consumer
+          image: <SEU_REGISTRO_DOCKER>/production-consumer:latest
+          env:
+            - name: APPLICATION
+              value: queue
+            - name: CONSUMER
+              value: OrderQueueConsumer
+            - name: QUEUE_NAME
+              value: fiap_fast_food_order_for_production
+            - name: POSTGRESQL_HOST
+              value: fast_food_postgres
+            - name: POSTGRESQL_USERNAME
+              value: fast_food_user
+            - name: POSTGRESQL_PASSWORD
+              value: fast_food_password
+            - name: POSTGRESQL_DATABASE
+              value: fast_food_db
+            - name: POSTGRESQL_PORT
+              value: "5432"
+            - name: AWS_ACCESS_KEY_ID
+              value: ASIAQJZMIJPPNAXVURDV
+            - name: AWS_SECRET_ACCESS_KEY
+              value: LiNXiaI+p6UVmo8bn2FuK7kjOtZwlIAMnwmfTziL
+            - name: AWS_REGION
+              value: us-east-1
+            - name: SQS_QUEUE_URL
+              value: https://sqs.us-east-1.amazonaws.com/021030783966/fiap_fast_food_order_for_production
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "200m"

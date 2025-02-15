@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class BaseEntity(BaseModel):
-    id: int
+    id: Optional[int] = None
     u_inserted: int
     inserted: datetime
     u_updated: Optional[int] = None

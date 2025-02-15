@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: production-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: production
+  template:
+    metadata:
+      labels:
+        app: production
+    spec:
+      containers:
+        - name: production
+          image: 103531044887.dkr.ecr.us-east-1.amazonaws.com/production:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APPLICATION
+              value: queue
+            - name: CONSUMER
+              value: OrderQueueConsumer
+            - name: QUEUE_NAME
+              value: fiap_fast_food_order_for_production
+            - name: POSTGRESQL_HOST
+              value: fast_food_postgres
+            - name: POSTGRESQL_USERNAME
+              value: fast_food_user
+            - name: POSTGRESQL_PASSWORD
+              value: fast_food_password
+            - name: POSTGRESQL_DATABASE
+              value: fast_food_db
+            - name: POSTGRESQL_PORT
+              value: "5432"
+            - name: ORDER_SERVICE_URL
+              value: http://orders-service:8080  # Usando o Service DNS
+            - name: SQS_QUEUE_URL
+              value: https://sqs.us-east-1.amazonaws.com/021030783966/fiap_fast_food_order_for_production
+            - name: AWS_REGION
+              value: us-east-1
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "200m"

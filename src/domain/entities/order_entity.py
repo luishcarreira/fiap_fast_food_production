@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from src.domain.entities.base_entity import BaseEntity
 from src.domain.entities.combo_entity import ComboEntity
@@ -9,4 +10,4 @@ class OrderEntity(BaseEntity):
     combos: list[ComboEntity]
     status: OrderStatusEnum = OrderStatusEnum.RECEIVED
     start_time: datetime
-    finished_time: datetime
+    finished_time: Optional[datetime] = None
