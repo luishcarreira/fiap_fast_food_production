@@ -6,12 +6,11 @@ from typing import Callable, AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from settings import Settings, get_settings
 from src.infra.db.session import get_session
 
 from src.domain.interfaces.services.queue.i_queue_service import IQueueService
 
-from src.infra.services.sqs_queue_service.sqs_queue_service import AwsSqsQueueService
+from src.infra.services.queue.sqs_queue_service import AwsSqsQueueService
 
 from src.domain.interfaces.repositories.i_addon_repository import IAddonRepository
 from src.domain.interfaces.repositories.i_combo_repository import IComboRepository
@@ -23,7 +22,6 @@ from src.infra.repositories.order_repository import OrderRepository
 from src.infra.repositories.product_repository import ProductRepository
 
 class Ioc:
-    settings = get_settings()
 
     @staticmethod
     def initialize():
@@ -31,11 +29,10 @@ class Ioc:
 
     @staticmethod
     def config(binder: Binder):
-        binder.bind(Settings, Ioc.settings)
 
         binder.bind(Callable[[], AsyncGenerator[AsyncSession, None]], get_session)
 
-        binder.bind_to_provider(IQueueService, lambda: AwsSqsQueueService(Ioc.settings))
+        binder.bind_to_provider(IQueueService, lambda: AwsSqsQueueService())
 
         binder.bind(IOrderRepository, OrderRepository(get_session))
         binder.bind(IComboRepository, ComboRepository(get_session))

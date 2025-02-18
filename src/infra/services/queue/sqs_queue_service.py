@@ -1,27 +1,35 @@
+import os
 from typing import List
 
 import boto3
 import inject
 from botocore.exceptions import BotoCoreError, ClientError
-
-from settings import Settings
+from dotenv import load_dotenv
 
 from src.domain.interfaces.services.queue.i_queue_service import IQueueService
 
 
 class AwsSqsQueueService(IQueueService):
     inject.autoparams()
-    def __init__(self, settings: Settings):
+
+    def __init__(self):
+        load_dotenv()
+
+        self._aws_region = os.getenv("AWS_REGION", "us-east-1")
+        self._aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
+        self._aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+        self._aws_session_token = os.getenv("AWS_SESSION_TOKEN")
+        self._sqs_queue_url = os.getenv("SQS_QUEUE_URL")
+        self._queue_name = os.getenv("QUEUE_NAME")
+
         self.sqs_client = boto3.client(
             service_name="sqs",
-            region_name=settings.aws_region,
-            aws_access_key_id=settings.aws_access_key_id,
-            aws_secret_access_key=settings.aws_secret_access_key,
-            aws_session_token=settings.aws_session_token,
-            endpoint_url=settings.sqs_queue_url,
+            region_name=self._aws_region,
+            aws_access_key_id=self._aws_access_key_id,
+            aws_secret_access_key=self._aws_secret_access_key,
+            aws_session_token=self._aws_session_token,
+            endpoint_url=self._sqs_queue_url,
         )
-
-        self._queue_name = settings.queue_name
 
     async def send_message(self, message: str, delay_seconds: int = 0) -> None:
         try:

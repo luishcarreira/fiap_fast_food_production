@@ -12,5 +12,8 @@ if __name__ == "__main__":
     elif application == 'queue':
         print("Iniciando os consumidores de fila...")
         StartupQueue.initialize()
+    elif application == 'test':
+        print("Iniciando os testes...")
+
     else:
         raise ValueError("APPLICATION deve ser 'api' ou 'queue'")

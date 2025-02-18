@@ -1,19 +1,19 @@
-from src.application.api.ioc.ioc import Ioc as IocApi
+from src.application.test.ioc import Ioc as IocTest
 
 
 class Startup:
 
     @staticmethod
     def initialize():
-        IocApi.initialize()
-
         from fastapi import FastAPI
-        app = FastAPI()
-
         from src.application.api.controllers import production_controller, health_check_controller
 
+        app = FastAPI()
+
+        # Configura as rotas para o modo de teste
         app.include_router(health_check_controller.route)
         app.include_router(production_controller.route)
 
-        import uvicorn
-        uvicorn.run(app, host="0.0.0.0", port=8000, )
+        IocTest.initialize()
+
+        return app
