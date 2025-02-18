@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: productionapi-config
+data:
+  APPLICATION: api
+  DATABASE_URL: postgresql+asyncpg://production01:secret123@fast_food_postgres:5432/fiap_fast_food_production

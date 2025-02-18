@@ -1,0 +1,67 @@
+name: CI - Api + Behave + SonarQube
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test-and-sonarqube:
+    name: Run Tests and SonarQube Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Permite melhor análise no SonarQube
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Configurar variáveis de ambiente
+        run: |
+          echo "APPLICATION=${{ secrets.APPLICATION }}" >> $GITHUB_ENV
+          echo "CONSUMER=${{ secrets.CONSUMER }}" >> $GITHUB_ENV
+          echo "QUEUE_NAME=${{ secrets.QUEUE_NAME }}" >> $GITHUB_ENV
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+          echo "SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }}" >> $GITHUB_ENV
+          echo "ORDER_API_URL=${{ secrets.ORDER_API_URL }}" >> $GITHUB_ENV
+
+      - name: Testar conexão com RDS
+        run: |
+          python -c "import asyncpg; import asyncio; asyncio.run(asyncpg.connect('${{ secrets.DATABASE_URL }}'))"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Rodar migrações Alembic
+        run: |
+          alembic revision --autogenerate -m "Initial migration"
+          alembic upgrade head
+
+      - name: Executar testes com Behave
+        run: |
+          behave --format json --outfile reports/behave.json
+
+      - name: Gerar cobertura de código
+        run: |
+          coverage run -m pytest
+          coverage xml -o reports/coverage.xml
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

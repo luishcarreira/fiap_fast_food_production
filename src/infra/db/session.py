@@ -7,19 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-POSTGRES_USERNAME = os.getenv("POSTGRES_USERNAME")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", 5432)
-POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
-
-DATABASE_URL = (
-    f"postgresql+asyncpg://{POSTGRES_USERNAME}:"
-    f"{POSTGRES_PASSWORD}@{POSTGRES_HOST}:"
-    f"{POSTGRES_PORT}/{POSTGRES_DATABASE}"
-)
-
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(os.getenv("DATABASE_URL"), echo=True)
 SessionLocal = sessionmaker(
     bind=engine,
     class_=AsyncSession,

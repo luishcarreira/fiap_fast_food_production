@@ -12,9 +12,7 @@ class AddonModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(nullable=False)
-    price: Mapped[float] = mapped_column(nullable=False)
     product_category: Mapped[ProductCategoryEnum] = mapped_column(nullable=False)
-    discount_percent: Mapped[float] = mapped_column(nullable=False)
 
     combos: Mapped[list[ComboModel]] = relationship(
         secondary=combo_addon_association, back_populates="addons"

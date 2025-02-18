@@ -7,7 +7,5 @@ class CreateProductDto(BaseModel):
     id: int
     name: str
     description: str
-    price: float
-    discount_percent: float
     estimated_time: int
     product_category: ProductCategoryEnum

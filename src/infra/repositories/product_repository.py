@@ -25,8 +25,6 @@ class ProductRepository(IProductRepository):
                         id=product_model.id,
                         name=product_model.name,
                         description=product_model.description,
-                        price=product_model.price,
-                        discount_percent=product_model.discount_percent,
                         estimated_time=product_model.estimated_time,
                         product_category=product_model.product_category
                     )
@@ -40,8 +38,6 @@ class ProductRepository(IProductRepository):
             product_model = ProductModel(
                 name=product_entity.name,
                 description=product_entity.description,
-                price=product_entity.price,
-                discount_percent=product_entity.discount_percent,
                 estimated_time=product_entity.estimated_time,
                 product_category=product_entity.product_category
             )
@@ -53,8 +49,6 @@ class ProductRepository(IProductRepository):
                 id=product_model.id,
                 name=product_model.name,
                 description=product_model.description,
-                price=product_model.price,
-                discount_percent=product_model.discount_percent,
                 estimated_time=product_model.estimated_time,
                 product_category=product_model.product_category
             )

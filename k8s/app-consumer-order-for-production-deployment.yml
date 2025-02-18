@@ -22,16 +22,8 @@ spec:
               value: OrderQueueConsumer
             - name: QUEUE_NAME
               value: fiap_fast_food_order_for_production
-            - name: POSTGRESQL_HOST
-              value: fast_food_postgres
-            - name: POSTGRESQL_USERNAME
-              value: fast_food_user
-            - name: POSTGRESQL_PASSWORD
-              value: fast_food_password
-            - name: POSTGRESQL_DATABASE
-              value: fast_food_db
-            - name: POSTGRESQL_PORT
-              value: "5432"
+            - name: DATABASE_URL
+              value:
             - name: AWS_ACCESS_KEY_ID
               value: ASIAQJZMIJPPNAXVURDV
             - name: AWS_SECRET_ACCESS_KEY

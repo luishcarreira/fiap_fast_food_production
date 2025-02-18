@@ -15,17 +15,8 @@ config = context.config
 
 load_dotenv()
 
-POSTGRES_USERNAME = os.getenv("POSTGRES_USERNAME")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
-
-DATABASE_URL = (
-    f"postgresql+psycopg2://{POSTGRES_USERNAME}:"
-    f"{POSTGRES_PASSWORD}@{POSTGRES_HOST}:"
-    f"{POSTGRES_PORT}/{POSTGRES_DATABASE}"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = DATABASE_URL.replace("asyncpg", "psycopg2")
 config.set_main_option('sqlalchemy.url', DATABASE_URL)
 
 # Interpret the config file for Python logging.
@@ -38,8 +29,8 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from src.infra.models.addon_model import AddonModel
-from src.infra.models.combo_model import ComboModel
 from src.infra.models.product_model import ProductModel
+from src.infra.models.combo_model import ComboModel
 from src.infra.models.order_model import OrderModel
 target_metadata = Base.metadata
 

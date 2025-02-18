@@ -2,12 +2,13 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from src.domain.entities.order_entity import OrderEntity
+from src.domain.enums.production_status_enum import ProductionStatusEnum
 
 
 class IOrderRepository(ABC):
 
     @abstractmethod
-    async def get(self, order_id: int) -> Optional[OrderEntity]:
+    async def get(self, id_order: int) -> Optional[OrderEntity]:
         raise NotImplementedError()
 
     @abstractmethod
@@ -15,5 +16,5 @@ class IOrderRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def update(self, order: OrderEntity) -> Optional[OrderEntity]:
+    async def update_status(self, id_order: int, status: ProductionStatusEnum) -> Optional[bool]:
         raise NotImplementedError()
