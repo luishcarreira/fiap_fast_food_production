@@ -53,12 +53,12 @@ jobs:
 
       - name: Executar testes com Behave
         run: |
-          behave .\test\bdd\ -f json -o reports/behave.json
+          behave ./test/bdd --steps-path ./test/bdd/steps -f json -o reports/behave.json
 
       - name: Gerar cobertura de código
         run: |
-          coverage run -m behave .\test\bdd\
-          coverage run -m pytest .\test\unit\
+          coverage run -m behave ./test/bdd/
+          coverage run -m pytest ./test/unit/
           coverage xml -o reports/coverage.xml
 
       - name: SonarQube Scan
