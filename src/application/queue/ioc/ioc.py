@@ -31,8 +31,6 @@ class Ioc:
     def config(binder: Binder):
         binder.bind(Settings, Ioc.settings)
 
-        binder.bind(Callable[[], AsyncGenerator[AsyncSession, None]], get_session)
-
         binder.bind_to_provider(IQueueService, lambda: AwsSqsQueueService(Ioc.settings))
 
         binder.bind(IOrderRepository, OrderRepository)

@@ -13,5 +13,5 @@ class ProductFindByIdUC:
     async def execute(self, find_by_id_product_dto: FindByIdProductDto) -> ProductEntity or None:
         if not find_by_id_product_dto.id:
             return None
-
-        return await self.product_repo.get(find_by_id_product_dto.id)
+        return None
+        #return await self.product_repo.get(find_by_id_product_dto.id)

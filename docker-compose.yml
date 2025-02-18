@@ -3,8 +3,10 @@ services:
     image: postgres:15
     container_name: fast_food_postgres
     restart: always
-    env_file:
-      - .env
+    environment:
+      POSTGRES_USER: production01
+      POSTGRES_PASSWORD: secret123
+      POSTGRES_DB: fiap_fast_food_production
     ports:
       - "5432:5432"
     volumes:
@@ -14,8 +16,9 @@ services:
     image: dpage/pgadmin4:latest
     container_name: fast_food_pgadmin
     restart: always
-    env_file:
-      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@fastfood.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
       - "5050:80"
     depends_on:

@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.domain.entities.addon_entity import AddonEntity
 from src.domain.interfaces.repositories.i_addon_repository import IAddonRepository
 from src.infra.models.addon_model import AddonModel
-from src.infra.utils.generic_mapper import GenericMapper
 
 
 class AddonRepository(IAddonRepository):
@@ -16,19 +15,41 @@ class AddonRepository(IAddonRepository):
         self._session_factory = session_factory
 
     async def get(self, id_addon: int) -> Optional[AddonEntity]:
-        async for session in self._session_factory():
-            result = await session.execute(
-                select(AddonModel).filter(AddonModel.id == id_addon)
-            )
+        try:
+            async for session in self._session_factory():
+                result = await session.execute(select(AddonModel).filter(AddonModel.id == id_addon))
+                addon_model = result.scalar_one_or_none()
+                if addon_model:
+                    addon_entity = AddonEntity(
+                        id=addon_model.id,
+                        name=addon_model.name,
+                        price=addon_model.price,
+                        discount_percent=addon_model.discount_percent,
+                        product_category=addon_model.product_category
+                    )
+                    return addon_entity
 
-            addon_model = result.scalars().first()
-
-            return GenericMapper.to_entity(addon_model, AddonEntity) if addon_model else None
+                return None
+        except Exception as e:
+            raise ValueError(f"Erro ao buscar produto: {e}")
 
     async def create(self, addon_entity: AddonEntity) -> Optional[AddonEntity]:
         async for session in self._session_factory():
-            addon_model = GenericMapper.to_model(addon_entity, AddonModel)
+            addon_model = AddonModel(
+                id=addon_entity.id,
+                name=addon_entity.name,
+                price=addon_entity.price,
+                discount_percent=addon_entity.discount_percent,
+                product_category=addon_entity.product_category
+            )
+
             session.add(addon_model)
             await session.commit()
 
-            return GenericMapper.to_entity(addon_model, AddonEntity)
+            return AddonEntity(
+                id=addon_model.id,
+                name=addon_model.name,
+                price=addon_model.price,
+                discount_percent=addon_model.discount_percent,
+                product_category=addon_model.product_category
+            )

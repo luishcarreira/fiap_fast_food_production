@@ -7,24 +7,21 @@ from sqlalchemy import pool
 
 from alembic import context
 
+from settings import get_settings
 from src.infra.db.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-load_dotenv()
+settings = get_settings()
 
-# Variáveis de configuração do banco
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_DB = os.getenv("POSTGRES_DB")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-
-DATABASE_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
-DATABASE_URL_SYNC = DATABASE_URL.replace("asyncpg", "psycopg2")
-config.set_main_option('sqlalchemy.url', DATABASE_URL_SYNC)
+DATABASE_URL = (
+    f"postgresql+psycopg2://{settings.postgresql_username}:"
+    f"{settings.postgresql_password}@{settings.postgresql_host}:"
+    f"{settings.postgresql_port}/{settings.postgresql_database}"
+)
+config.set_main_option('sqlalchemy.url', DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -35,6 +32,10 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
+from src.infra.models.addon_model import AddonModel
+from src.infra.models.combo_model import ComboModel
+from src.infra.models.product_model import ProductModel
+from src.infra.models.order_model import OrderModel
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

@@ -17,4 +17,4 @@ class OrderModel(Base):
     start_time: Mapped[datetime] = mapped_column(nullable=False)
     finished_time: Mapped[datetime] = mapped_column(nullable=True)
 
-    combos: Mapped[list["ComboModel"]] = relationship("ComboModel", back_populates="order")
+    combos: Mapped[list["ComboModel"]] = relationship("ComboModel", back_populates="order", foreign_keys="ComboModel.id_order")

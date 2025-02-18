@@ -20,16 +20,30 @@ class ComboRepository(IComboRepository):
             result = await session.execute(
                 select(ComboModel).filter(ComboModel.id == id_combo)
             )
-
             combo_model = result.scalars().first()
-
-            return GenericMapper.to_entity(combo_model, ComboEntity) if combo_model else None
-
+            if combo_model:
+                combo_entity = ComboEntity(
+                    id=combo_model.id,
+                    id_product=combo_model.id_product,
+                    price=combo_model.price,
+                    addons=combo_model.addons,
+                )
+                return combo_entity
+            return None
 
     async def create(self, combo_entity: ComboEntity) -> Optional[ComboEntity]:
         async for session in self._session_factory():
-            combo_model = GenericMapper.to_model(combo_entity, ComboModel)
+            combo_model = ComboModel(
+                id_product=combo_entity.id_product,
+                price=combo_entity.price,
+                addons=combo_entity.addons
+            )
             session.add(combo_model)
             await session.commit()
 
-            return GenericMapper.to_entity(combo_model, ComboEntity)
+            return ComboEntity(
+                id=combo_model.id,
+                id_product=combo_model.id_product,
+                price=combo_model.price,
+                addons=combo_model.addons
+            )

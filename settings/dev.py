@@ -12,11 +12,6 @@ class Settings(BaseSettings):
     postgresql_password: str
     postgresql_database: str
     postgresql_port: int
-    postgres_host_auth_method: str
-
-    # pgadmin
-    pgadmin_default_email: str
-    pgadmin_default_password: str
 
     # aws
     aws_access_key_id: str

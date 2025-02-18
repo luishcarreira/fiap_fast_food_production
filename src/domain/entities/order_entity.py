@@ -7,7 +7,7 @@ from src.domain.enums.order_status_enum import OrderStatusEnum
 
 
 class OrderEntity(BaseEntity):
-    combos: list[ComboEntity]
+    combos: list[ComboEntity] = []
     status: OrderStatusEnum = OrderStatusEnum.RECEIVED
     start_time: datetime
     finished_time: Optional[datetime] = None

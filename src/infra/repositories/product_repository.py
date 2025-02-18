@@ -8,31 +8,53 @@ from src.domain.entities.product_entity import ProductEntity
 from src.domain.interfaces.repositories.i_product_repository import IProductRepository
 
 from src.infra.models.product_model import ProductModel
-from src.infra.utils.generic_mapper import GenericMapper
 
 
 class ProductRepository(IProductRepository):
-    @inject.autoparams()
-    def __init__(self, session_factory: Callable[[], AsyncGenerator[AsyncSession, None]]):
-        self._session_factory = session_factory
+    inject.autoparams()
+    def __init__(self, session_provider: Callable[[], AsyncGenerator[AsyncSession, None]]):
+        self._session_provider = session_provider
 
     async def get(self, product_id: int) -> ProductEntity | None:
-        async for session in self._session_factory():
-            result = await session.execute(
-                select(ProductModel).filter(ProductModel.id == product_id)
-            )
-
-            product_model = result.scalars().first()
-
-            return GenericMapper.to_entity(product_model, ProductEntity) if product_model else None
-
-        return None
+        try:
+            async for session in self._session_provider():
+                result = await session.execute(select(ProductModel).where(ProductModel.id == product_id))
+                product_model = result.scalar_one_or_none()
+                if product_model:
+                    product_entity = ProductEntity(
+                        id=product_model.id,
+                        name=product_model.name,
+                        description=product_model.description,
+                        price=product_model.price,
+                        discount_percent=product_model.discount_percent,
+                        estimated_time=product_model.estimated_time,
+                        product_category=product_model.product_category
+                    )
+                    return product_entity
+                return None
+        except Exception as e:
+            raise ValueError(f"Erro ao buscar produto: {e}")
 
     async def create(self, product_entity: ProductEntity) -> Optional[ProductEntity]:
-        async for session in self._session_factory():
-            product_model = GenericMapper.to_model(product_entity, ProductModel)
+        async for session in self._session_provider():
+            product_model = ProductModel(
+                name=product_entity.name,
+                description=product_entity.description,
+                price=product_entity.price,
+                discount_percent=product_entity.discount_percent,
+                estimated_time=product_entity.estimated_time,
+                product_category=product_entity.product_category
+            )
 
             session.add(product_model)
             await session.commit()
 
-            return GenericMapper.to_entity(product_model, ProductEntity)
+            return ProductEntity(
+                id=product_model.id,
+                name=product_model.name,
+                description=product_model.description,
+                price=product_model.price,
+                discount_percent=product_model.discount_percent,
+                estimated_time=product_model.estimated_time,
+                product_category=product_model.product_category
+            )

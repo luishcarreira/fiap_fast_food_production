@@ -18,5 +18,6 @@ class ProductModel(Base):
     estimated_time: Mapped[int] = mapped_column(nullable=False)
     product_category: Mapped[ProductCategoryEnum] = mapped_column(nullable=False)
 
-    # Relacionamentos
-    combos: Mapped[list[ComboModel]] = relationship(back_populates="product")
+    combos: Mapped[list["ComboModel"]] = relationship(
+        "ComboModel", back_populates="product", foreign_keys="ComboModel.id_product"
+    )

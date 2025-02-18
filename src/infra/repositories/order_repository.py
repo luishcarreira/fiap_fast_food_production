@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.domain.entities.order_entity import OrderEntity
 from src.domain.interfaces.repositories.i_order_repository import IOrderRepository
 from src.infra.models.order_model import OrderModel
-from src.infra.utils.generic_mapper import GenericMapper
 
 
 class OrderRepository(IOrderRepository):
@@ -16,17 +15,66 @@ class OrderRepository(IOrderRepository):
         self._session_factory = session_factory
 
     async def get(self, order_id: int) -> Optional[OrderEntity]:
-        async for session in self._session_factory():
-            result = await session.execute(
-                select(OrderModel).filter(OrderModel.id == order_id)
-            )
+        try:
+            async for session in self._session_factory():
+                result = await session.execute(select(OrderModel).filter(OrderModel.id == order_id))
+                order_model = result.scalar_one_or_none()
+                if order_model:
+                    order_entity = OrderEntity(
+                        id=order_model.id,
+                        status=order_model.status,
+                        start_time=order_model.start_time,
+                        finished_time=order_model.finished_time,
+                        combos=order_model.combos if order_model.combos else [],
+                    )
 
-            order_model = result.scalars().first()
+                    return order_entity
 
-            return GenericMapper.to_entity(order_model, OrderEntity) if order_model else None
+                return None
+        except Exception as e:
+            raise ValueError(f"Erro ao buscar produto: {e}")
 
     async def create(self, order: OrderEntity) -> Optional[OrderEntity]:
-        pass
+        async def create(self, order: OrderEntity) -> Optional[OrderEntity]:
+            async for session in self._session_factory():
+                order_model = OrderModel(
+                    status=order.status,
+                    start_time=order.start_time,
+                    finished_time=order.finished_time,
+                    combos=order.combos
+                )
+
+                session.add(order_model)
+                await session.commit()
+
+                return OrderEntity(
+                    id=order_model.id,
+                    status=order_model.status,
+                    start_time=order_model.start_time,
+                    finished_time=order_model.finished_time,
+                    combos=order_model.combos if order_model.combos else []
+                )
 
     async def update(self, order: OrderEntity) -> Optional[OrderEntity]:
-        pass
+        try:
+            async for session in self._session_factory():
+                result = await session.execute(select(OrderModel).filter(OrderModel.id == order.id))
+                order_model = result.scalar_one_or_none()
+                if order_model:
+                    order_model.status = order.status
+                    order_model.start_time = order.start_time
+                    order_model.finished_time = order.finished_time
+                    order_model.combos = order.combos
+
+                    await session.commit()
+
+                    return OrderEntity(
+                        id=order_model.id,
+                        status=order_model.status,
+                        start_time=order_model.start_time,
+                        finished_time=order_model.finished_time,
+                        combos=order_model.combos if order_model.combos else []
+                    )
+                return None
+        except Exception as e:
+            raise ValueError(f"Erro ao atualizar pedido: {e}")

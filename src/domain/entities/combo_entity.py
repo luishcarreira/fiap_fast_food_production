@@ -6,7 +6,7 @@ from src.domain.entities.product_entity import ProductEntity
 
 
 class ComboEntity(BaseEntity):
-    id_product: int
+    id_product: int = 0
     addons: list[AddonEntity] = []
     price: Optional[float] = None
 

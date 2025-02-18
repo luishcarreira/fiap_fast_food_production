@@ -32,25 +32,19 @@ class OrderCreateUC(BaseUC):
             combos=list_combos,
             status=OrderStatusEnum.RECEIVED,
             start_time=datetime.now(),
-            u_inserted=1,  # mock
-            inserted=datetime.now()
         )
 
         return await self._order_repository.create(order_entity)
 
     async def _process_combo(self, combo) -> ComboEntity:
-        combo_entity = ComboEntity(
-            u_inserted=1, # mock
-            inserted=datetime.now(),
-            id_product=0
-        )
-
         product = await self._get_product(combo.product.id)
 
         if not product:
             product = await self._create_product(ProductEntity(**combo.product.model_dump(exclude_none=True)))
 
-        combo_entity.id_product = product.id
+        combo_entity = ComboEntity(
+            id_product=product.id if product else 0,
+        )
 
         for addon in combo.addons:
             addon_entity = await self._get_addon(addon.id)
