@@ -25,9 +25,7 @@ services:
       - postgres
 
   api:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: api_production:latest
     container_name: fast_food_api
     restart: always
     env_file:

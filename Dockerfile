@@ -3,6 +3,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 COPY ./requirements.txt /app/requirements.txt
+COPY ./settings /app/settings
 COPY ./src /app/src
 
 RUN pip install --no-cache-dir --upgrade pip && \

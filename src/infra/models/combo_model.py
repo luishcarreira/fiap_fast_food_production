@@ -18,8 +18,8 @@ class ComboModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     id_product: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False)
-    id_order: Mapped[int] = mapped_column(ForeignKey("orders.id"))
-    price: Mapped[float] = mapped_column(nullable=False)
+    id_order: Mapped[int] = mapped_column(ForeignKey("orders.id"), nullable=True)
+    price: Mapped[float] = mapped_column(nullable=True)
 
     product: Mapped["ProductModel"] = relationship("ProductModel", back_populates="combos")
     addons: Mapped[list["AddonModel"]] = relationship(secondary=combo_addon_association, back_populates="combos")

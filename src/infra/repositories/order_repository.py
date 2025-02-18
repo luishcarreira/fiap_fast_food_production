@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.entities.order_entity import OrderEntity
 from src.domain.interfaces.repositories.i_order_repository import IOrderRepository
+from src.infra.models.combo_model import ComboModel
 from src.infra.models.order_model import OrderModel
 
 
@@ -37,11 +38,20 @@ class OrderRepository(IOrderRepository):
     async def create(self, order: OrderEntity) -> Optional[OrderEntity]:
         async def create(self, order: OrderEntity) -> Optional[OrderEntity]:
             async for session in self._session_factory():
+                combos_model = []
+                for combo in order.combos:
+                    combo_model = await session.execute(select(ComboModel).filter(ComboModel.id == combo.id))
+                    if not combo_model.scalar_one_or_none():
+                        raise ValueError("Erro! Combo nao encontrado")
+
+                    combo_model = combo_model.scalar_one_or_none()
+                    combos_model.append(combo_model)
+
                 order_model = OrderModel(
                     status=order.status,
                     start_time=order.start_time,
                     finished_time=order.finished_time,
-                    combos=order.combos
+                    combos=combos_model
                 )
 
                 session.add(order_model)
@@ -52,7 +62,7 @@ class OrderRepository(IOrderRepository):
                     status=order_model.status,
                     start_time=order_model.start_time,
                     finished_time=order_model.finished_time,
-                    combos=order_model.combos if order_model.combos else []
+                    combos=[ComboEntity(id=combo.id, id_product=combo.id_product, price=combo.price, addons=combo.addons) for combo in order_model.combos]
                 )
 
     async def update(self, order: OrderEntity) -> Optional[OrderEntity]:

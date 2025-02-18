@@ -44,6 +44,7 @@ class OrderCreateUC(BaseUC):
 
         combo_entity = ComboEntity(
             id_product=product.id if product else 0,
+            price=0,
         )
 
         for addon in combo.addons:
