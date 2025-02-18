@@ -41,11 +41,11 @@ jobs:
           echo "SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }}" >> $GITHUB_ENV
           echo "ORDER_API_URL=${{ secrets.ORDER_API_URL }}" >> $GITHUB_ENV
 
-      - name: Testar conexão com RDS
-        run: |
-          python -c "import asyncpg; import asyncio; asyncio.run(asyncpg.connect('${{ secrets.DATABASE_URL }}'))"
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+#      - name: Testar conexão com RDS
+#        run: |
+#          python -c "import asyncpg; import asyncio; asyncio.run(asyncpg.connect('${{ secrets.DATABASE_URL }}'))"
+#        env:
+#          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Rodar migrações Alembic
         run: |
