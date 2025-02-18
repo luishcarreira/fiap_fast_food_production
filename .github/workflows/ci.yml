@@ -47,10 +47,9 @@ jobs:
 #        env:
 #          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Rodar migrações Alembic
-        run: |
-          alembic revision --autogenerate -m "Initial migration"
-          alembic upgrade head
+#      - name: Rodar migrações Alembic
+#        run: |
+#          alembic upgrade head
 
       - name: Executar testes com Behave
         run: |
