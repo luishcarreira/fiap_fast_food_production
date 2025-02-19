@@ -10,7 +10,7 @@ class SendOrderToQueueUC:
 
     async def execute(self, order: CreateOrderDto) -> None:
         try:
-            await self.queue_service().send_message(
+            await self.queue_service.send_message(
                 message=order.model_dump_json()
             )
         except Exception as e:

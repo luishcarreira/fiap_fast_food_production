@@ -12,7 +12,7 @@ route = APIRouter()
 @route.post('/api/production/add_order', tags=["production"])
 async def add_order(order: CreateOrderDto):
     try:
-        await OrderCreateUC().execute(order)
+        await SendOrderToQueueUC().execute(order)
         return JSONResponse(content={"message": "Order added successfully"}, status_code=201)
     except Exception as e:
         raise HTTPException(
