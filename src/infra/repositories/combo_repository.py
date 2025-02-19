@@ -26,7 +26,6 @@ class ComboRepository(IComboRepository):
                 combo_entity = ComboEntity(
                     id=combo_model.id,
                     id_product=combo_model.id_product,
-                    price=combo_model.price,
                     addons=combo_model.addons,
                 )
                 return combo_entity
@@ -41,7 +40,6 @@ class ComboRepository(IComboRepository):
 
             combo_model = ComboModel(
                 id_product=combo_entity.id_product,
-                price=combo_entity.price,
                 addons=addon_models
             )
 
@@ -51,6 +49,5 @@ class ComboRepository(IComboRepository):
             return ComboEntity(
                 id=combo_model.id,
                 id_product=combo_model.id_product,
-                price=combo_model.price,
-                addons=[AddonEntity(id=addon.id, name=addon.name, price=addon.price, discount_percent=addon.discount_percent, product_category=addon.product_category) for addon in combo_model.addons]
+                addons=[AddonEntity(id=addon.id, name=addon.name, product_category=addon.product_category) for addon in combo_model.addons]
             )

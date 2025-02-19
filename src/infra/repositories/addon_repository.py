@@ -23,8 +23,6 @@ class AddonRepository(IAddonRepository):
                     addon_entity = AddonEntity(
                         id=addon_model.id,
                         name=addon_model.name,
-                        price=addon_model.price,
-                        discount_percent=addon_model.discount_percent,
                         product_category=addon_model.product_category
                     )
                     return addon_entity
@@ -38,8 +36,6 @@ class AddonRepository(IAddonRepository):
             addon_model = AddonModel(
                 id=addon_entity.id,
                 name=addon_entity.name,
-                price=addon_entity.price,
-                discount_percent=addon_entity.discount_percent,
                 product_category=addon_entity.product_category
             )
 
@@ -49,7 +45,5 @@ class AddonRepository(IAddonRepository):
             return AddonEntity(
                 id=addon_model.id,
                 name=addon_model.name,
-                price=addon_model.price,
-                discount_percent=addon_model.discount_percent,
                 product_category=addon_model.product_category
             )

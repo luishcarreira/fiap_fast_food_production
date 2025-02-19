@@ -41,8 +41,6 @@ async def step_send_order_to_api(context):
                     "id": 201,
                     "name": "Combo Jantinha",
                     "description": "1 espetinho de carne, arroz, vinagrete, mandioca e farofa.",
-                    "price": 25.50,
-                    "discount_percent": 10,
                     "estimated_time": 20,
                     "product_category": "Lanche"
                 },
@@ -50,16 +48,12 @@ async def step_send_order_to_api(context):
                     {
                         "id": 301,
                         "name": "Espetinho de Frango",
-                        "price": 5.00,
-                        "product_category": "Lanche",
-                        "discount_percent": 0
+                        "product_category": "Lanche"
                     },
                     {
                         "id": 302,
                         "name": "Porção de Batata Frita",
-                        "price": 10.00,
-                        "product_category": "Acompanhamento",
-                        "discount_percent": 5
+                        "product_category": "Acompanhamento"
                     }
                 ]
             },
@@ -69,8 +63,6 @@ async def step_send_order_to_api(context):
                     "id": 202,
                     "name": "Combo 1",
                     "description": "4 espetinhos de sua escolha, arroz, vinagrete, mandioca e farofa.",
-                    "price": 60.00,
-                    "discount_percent": 15,
                     "estimated_time": 30,
                     "product_category": "Lanche"
                 },
@@ -78,16 +70,12 @@ async def step_send_order_to_api(context):
                     {
                         "id": 303,
                         "name": "Espetinho de Linguiça",
-                        "price": 6.00,
-                        "product_category": "Lanche",
-                        "discount_percent": 0
+                        "product_category": "Lanche"
                     },
                     {
                         "id": 304,
                         "name": "Refrigerante Lata",
-                        "price": 5.50,
-                        "product_category": "Bebida",
-                        "discount_percent": 0
+                        "product_category": "Bebida"
                     }
                 ]
             }

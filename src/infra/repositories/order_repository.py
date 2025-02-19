@@ -19,10 +19,9 @@ class OrderRepository(IOrderRepository):
 
     async def get(self, id_order: int) -> Optional[OrderEntity]:
         try:
-            session = await self._session_factory()  # Agora garantimos que session seja AsyncSession
-            async with session as s:  # Usamos um alias para evitar sombra de variável
-                result = await s.execute(select(OrderModel).filter(OrderModel.id == id_order))
-                order_model = await result.scalar_one_or_none()
+            async for session in self._session_factory():  # Usamos um alias para evitar sombra de variável
+                result = await session.execute(select(OrderModel).filter(OrderModel.id == id_order))
+                order_model = result.scalar_one_or_none()
 
                 if order_model:
                     return OrderEntity(
@@ -31,7 +30,14 @@ class OrderRepository(IOrderRepository):
                         status_production=order_model.status_production,
                         start_time=order_model.start_time,
                         finished_time=order_model.finished_time,
-                        combos=order_model.combos if order_model.combos else [],
+                        combos=[
+                            ComboEntity(
+                                id=combo.id,
+                                id_product=combo.id_product,
+                                addons=combo.addons
+                            )
+                            for combo in order_model.combos
+                        ]
                     )
 
                 return None
@@ -39,15 +45,11 @@ class OrderRepository(IOrderRepository):
             raise ValueError(f"Erro ao buscar order: {e}")
 
     async def create(self, order: OrderEntity) -> Optional[OrderEntity]:
-        session = await self._session_factory()
-        async with session as s:
+        async for session in self._session_factory():
             combos_model = []
             for combo in order.combos:
-                combo_model = await s.execute(select(ComboModel).filter(ComboModel.id == combo.id))
-                if not combo_model.scalar_one_or_none():
-                    raise ValueError("Erro! Combo nao encontrado")
-
-                combo_model = await combo_model.scalar_one_or_none()
+                combo_model = await session.execute(select(ComboModel).filter(ComboModel.id == combo.id))
+                combo_model = combo_model.scalar_one_or_none()
                 combos_model.append(combo_model) if combo_model else None
 
             order_model = OrderModel(
@@ -58,8 +60,8 @@ class OrderRepository(IOrderRepository):
                 combos=combos_model
             )
 
-            s.add(order_model)
-            await s.commit()
+            session.add(order_model)
+            await session.commit()
 
             return OrderEntity(
                 id=order_model.id,
@@ -77,15 +79,14 @@ class OrderRepository(IOrderRepository):
             )
 
     async def update_status(self, id_order: int, status: ProductionStatusEnum) -> Optional[bool]:
-        session = await self._session_factory()
-        async with session as s:
-            result = await s.execute(select(OrderModel).filter(OrderModel.id == id_order))
-            order_model = await result.scalar_one_or_none()
+        async for session in self._session_factory():
+            result = await session.execute(select(OrderModel).filter(OrderModel.id == id_order))
+            order_model = result.scalar_one_or_none()
             if not order_model:
                 return False
 
             order_model.status_production = status
 
-            await s.commit()
+            await session.commit()
 
             return True

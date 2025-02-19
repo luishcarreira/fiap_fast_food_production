@@ -21,9 +21,14 @@ class OrderCreateUC(BaseUC):
 
         list_combos: list[ComboEntity] = []
         for combo in create_order_dto.combos:
-            combo_entity = await self._process_combo(combo)
+            combo_entity = None
 
-            await self._combo_repository.create(combo_entity)
+            if combo.id:
+                combo_entity = await self._combo_repository.get(combo.id)
+
+            if not combo_entity:
+                combo_entity = await self._process_combo(combo)
+                await self._combo_repository.create(combo_entity)
 
             list_combos.append(combo_entity)
 
@@ -43,8 +48,8 @@ class OrderCreateUC(BaseUC):
             product = await self._create_product(ProductEntity(**combo.product.model_dump(exclude_none=True)))
 
         combo_entity = ComboEntity(
-            id_product=product.id if product else 0,
-            price=0,
+            id=combo.id,
+            id_product=product.id if product else 0
         )
 
         for addon in combo.addons:

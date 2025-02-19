@@ -13,8 +13,6 @@ class ProductModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
-    price: Mapped[float] = mapped_column(nullable=False)
-    discount_percent: Mapped[float] = mapped_column(nullable=False)
     estimated_time: Mapped[int] = mapped_column(nullable=False)
     product_category: Mapped[ProductCategoryEnum] = mapped_column(nullable=False)
 
