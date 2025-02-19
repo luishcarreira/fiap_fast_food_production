@@ -15,5 +15,5 @@ class AddonModel(Base):
     product_category: Mapped[ProductCategoryEnum] = mapped_column(nullable=False)
 
     combos: Mapped[list[ComboModel]] = relationship(
-        secondary=combo_addon_association, back_populates="addons"
+        secondary=combo_addon_association, back_populates="addons", lazy="selectin"
     )

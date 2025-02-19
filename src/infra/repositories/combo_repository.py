@@ -23,32 +23,37 @@ class ComboRepository(IComboRepository):
             )
             combo_model = result.scalars().first()
             if combo_model:
+
                 combo_entity = ComboEntity(
                     id=combo_model.id,
                     id_product=combo_model.id_product,
-                    addons=combo_model.addons,
+                    addons=[AddonEntity(id=addon.id, name=addon.name, product_category=addon.product_category) for addon in combo_model.addons],
                 )
                 return combo_entity
             return None
 
     async def create(self, combo_entity: ComboEntity) -> Optional[ComboEntity]:
         async for session in self._session_factory():
-            addon_models = []
-            for addon in combo_entity.addons:
-                addon = await session.execute(select(AddonModel).where(AddonModel.id == addon.id))
-                addon_models.append(addon.scalar_one_or_none())
-
             combo_model = ComboModel(
                 id=combo_entity.id,
                 id_product=combo_entity.id_product,
-                addons=addon_models
             )
+
+            addon_ids = [addon.id for addon in combo_entity.addons]
+            addons = await session.execute(
+                select(AddonModel).filter(AddonModel.id.in_(addon_ids))
+            )
+            addon_list = addons.scalars().all()
+
+            # Associate addons with combo
+            combo_model.addons.extend(addon_list)
 
             session.add(combo_model)
             await session.commit()
+            await session.refresh(combo_model)
 
             return ComboEntity(
                 id=combo_model.id,
                 id_product=combo_model.id_product,
-                addons=[AddonEntity(id=addon.id, name=addon.name, product_category=addon.product_category) for addon in combo_model.addons]
+                addons=[AddonEntity(id=addon.id, name=addon.name, product_category=addon.product_category) for addon in combo_model.addons],
             )

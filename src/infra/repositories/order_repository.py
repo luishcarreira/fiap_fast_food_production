@@ -4,18 +4,58 @@ import inject
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.domain.entities.addon_entity import AddonEntity
 from src.domain.entities.combo_entity import ComboEntity
 from src.domain.entities.order_entity import OrderEntity
 from src.domain.enums.production_status_enum import ProductionStatusEnum
 from src.domain.interfaces.repositories.i_order_repository import IOrderRepository
+from src.infra.models.addon_model import AddonModel
 from src.infra.models.combo_model import ComboModel
 from src.infra.models.order_model import OrderModel
 
 
 class OrderRepository(IOrderRepository):
+
     @inject.autoparams()
     def __init__(self, session_factory: Callable[[], AsyncGenerator[AsyncSession, None]]):
         self._session_factory = session_factory
+
+    async def get_all(self) -> Optional[OrderEntity]:
+        try:
+            async for session in self._session_factory():  # Usamos um alias para evitar sombra de variável
+                result = await session.execute(select(OrderModel))
+                order_model = result.scalars().all()
+
+                if order_model:
+                    return [
+                        OrderEntity(
+                            id=order.id,
+                            status=order.status,
+                            status_production=order.status_production,
+                            start_time=order.start_time,
+                            finished_time=order.finished_time,
+                            combos=[
+                                ComboEntity(
+                                    id=combo.id,
+                                    id_product=combo.id_product,
+                                    addons=[
+                                        AddonEntity(
+                                            id=addon.id,
+                                            name=addon.name,
+                                            product_category=addon.product_category
+                                        )
+                                        for addon in combo.addons
+                                    ]
+                                )
+                                for combo in order.combos
+                            ]
+                        )
+                        for order in order_model
+                    ]
+
+                return None
+        except Exception as e:
+            raise ValueError(f"Erro ao buscar order: {e}")
 
     async def get(self, id_order: int) -> Optional[OrderEntity]:
         try:
@@ -46,22 +86,25 @@ class OrderRepository(IOrderRepository):
 
     async def create(self, order: OrderEntity) -> Optional[OrderEntity]:
         async for session in self._session_factory():
-            combos_model = []
-            for combo in order.combos:
-                combo_model = await session.execute(select(ComboModel).filter(ComboModel.id == combo.id))
-                combo_model = combo_model.scalar_one_or_none()
-                combos_model.append(combo_model) if combo_model else None
-
             order_model = OrderModel(
                 status=order.status,
                 status_production=order.status_production,
                 start_time=order.start_time,
                 finished_time=order.finished_time,
-                combos=combos_model
             )
+
+            combo_ids = [combo.id for combo in order.combos]
+            combos = await session.execute(
+                select(ComboModel).filter(ComboModel.id.in_(combo_ids))
+            )
+            combo_list = combos.scalars().all()
+
+            # Associate combos with order
+            order_model.combos.extend(combo_list)
 
             session.add(order_model)
             await session.commit()
+            await session.refresh(order_model)
 
             return OrderEntity(
                 id=order_model.id,
@@ -72,7 +115,14 @@ class OrderRepository(IOrderRepository):
                     ComboEntity(
                         id=combo.id,
                         id_product=combo.id_product,
-                        addons=combo.addons
+                        addons=[
+                            AddonEntity(
+                                id=addon.id,
+                                name=addon.name,
+                                product_category=addon.product_category
+                            )
+                            for addon in combo.addons
+                        ]
                     )
                     for combo in order_model.combos
                 ]

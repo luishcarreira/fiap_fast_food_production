@@ -36,6 +36,7 @@ class ProductRepository(IProductRepository):
     async def create(self, product_entity: ProductEntity) -> Optional[ProductEntity]:
         async for session in self._session_provider():
             product_model = ProductModel(
+                id=product_entity.id,
                 name=product_entity.name,
                 description=product_entity.description,
                 estimated_time=product_entity.estimated_time,

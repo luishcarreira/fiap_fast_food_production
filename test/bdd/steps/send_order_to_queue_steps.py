@@ -24,7 +24,8 @@ def step_api_is_running(context):
 def step_queue_is_empty(context):
     """Limpa a fila de mensagens antes de realizar o teste"""
     context.mock_queue_service = inject.instance(IQueueService)
-    context.mock_queue_service().clear_queue()
+    context.mock_queue_service = context.mock_queue_service()
+    context.mock_queue_service.clear_queue()
     assert len(context.mock_queue_service.sent_messages) == 0
 
 

@@ -8,6 +8,10 @@ from src.domain.enums.production_status_enum import ProductionStatusEnum
 class IOrderRepository(ABC):
 
     @abstractmethod
+    async def get_all(self) -> Optional[OrderEntity]:
+        raise NotImplementedError()
+
+    @abstractmethod
     async def get(self, id_order: int) -> Optional[OrderEntity]:
         raise NotImplementedError()
 

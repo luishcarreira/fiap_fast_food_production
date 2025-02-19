@@ -17,5 +17,5 @@ class ProductModel(Base):
     product_category: Mapped[ProductCategoryEnum] = mapped_column(nullable=False)
 
     combos: Mapped[list["ComboModel"]] = relationship(
-        "ComboModel", back_populates="product", foreign_keys="ComboModel.id_product"
+        "ComboModel", back_populates="product", foreign_keys="ComboModel.id_product", lazy="selectin"
     )
