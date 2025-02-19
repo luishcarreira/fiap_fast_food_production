@@ -7,6 +7,7 @@ from src.domain.interfaces.repositories.i_combo_repository import IComboReposito
 from src.domain.interfaces.repositories.i_order_repository import IOrderRepository
 from src.domain.interfaces.repositories.i_product_repository import IProductRepository
 from src.domain.interfaces.services.queue.i_queue_service import IQueueService
+from src.infra.db.session import get_session
 
 from src.infra.repositories.addon_repository import AddonRepository
 from src.infra.repositories.combo_repository import ComboRepository
@@ -25,7 +26,7 @@ class Ioc:
     def config(binder: Binder):
         binder.bind_to_provider(IQueueService, lambda: AwsSqsQueueService())
 
-        binder.bind(IOrderRepository, OrderRepository)
-        binder.bind(IComboRepository, ComboRepository)
-        binder.bind(IProductRepository, ProductRepository)
-        binder.bind(IAddonRepository, AddonRepository)
+        binder.bind(IOrderRepository, OrderRepository(get_session))
+        binder.bind(IComboRepository, ComboRepository(get_session))
+        binder.bind(IProductRepository, ProductRepository(get_session))
+        binder.bind(IAddonRepository, AddonRepository(get_session))

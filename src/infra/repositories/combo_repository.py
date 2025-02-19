@@ -39,6 +39,7 @@ class ComboRepository(IComboRepository):
                 addon_models.append(addon.scalar_one_or_none())
 
             combo_model = ComboModel(
+                id=combo_entity.id,
                 id_product=combo_entity.id_product,
                 addons=addon_models
             )
